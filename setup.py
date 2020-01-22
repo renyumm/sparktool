@@ -1,7 +1,7 @@
 '''
 @Date: 2019-12-08 01:59:23
 @LastEditors  : ryan.ren
-@LastEditTime : 2020-01-09 19:38:30
+@LastEditTime : 2020-01-22 19:11:52
 @Description: 
 '''
 import setuptools
@@ -11,7 +11,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sparktool",
-    version="2.0.5",
+    version="3.0.6",
     author="ryanren",
     author_email="strrenyumm@gmail.com",
     description="sparktool for hccn",
@@ -24,5 +24,5 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=['sqlparse', 'prettytable', 'pyspark']
+    install_requires=['sqlparse', 'prettytable',]
 )

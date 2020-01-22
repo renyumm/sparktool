@@ -1,9 +1,3 @@
-'''
-@Date: 2019-12-07 18:52:48
-@LastEditors  : ryan.ren
-@LastEditTime : 2020-01-05 23:23:36
-@Description: generate settings file
-'''
 import sys
 import os
 import json
@@ -28,8 +22,10 @@ def generate_settings():
             },
 
             "keytab": ["admin@EXAMPLE.COM", "keytabpath"],
+            "hue": {"username": "", "password": ""},
+            "hue_editor": 'http://prod-hadoop-cdh5-01.homecredit.cn:8888'
 
-            "version": '2.0.0'
+            "version": '3.0.6'
         }
     
     # generate settings file
@@ -41,7 +37,12 @@ def generate_settings():
     with open(ini, 'r') as f:
         settings = dict(json.load(f))
     
+    # sync version 
     if settings.get('version') != tmp['version']:
+        settings['version'] = tmp['version']
+        for key in tmp:
+            if key not in settings:
+                settings[key] = tmp[key]
         with open(ini, 'w') as f:
             f.write(json.dumps(settings, indent=4))
 
@@ -74,6 +75,21 @@ def switch_keytab(username, keytabpath, ifcover=True):
             settings['keytab'][0] = username
         with open(ini, 'w') as f:
             f.write(json.dumps(settings, indent=4))
+
+    print('Switch Successfully')
+
+
+def switch_huetab(username, password):
+    '''
+    @description: switch keytab
+    '''
+    ini = os.path.expanduser('~') + '/.sparktool.json'
+    with open(ini, 'r') as f:
+        settings = dict(json.load(f))
+        settings['hue']["username"] = username
+        settings['hue']["password"] = password
+    with open(ini, 'w') as f:
+        f.write(json.dumps(settings, indent=4))
 
     print('Switch Successfully')
 

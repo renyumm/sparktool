@@ -1,0 +1,11 @@
+README.md
+setup.py
+sparktool/__init__.py
+sparktool/sparkeir.py
+sparktool/sparkhue.py
+sparktool/sparktie.py
+sparktool.egg-info/PKG-INFO
+sparktool.egg-info/SOURCES.txt
+sparktool.egg-info/dependency_links.txt
+sparktool.egg-info/requires.txt
+sparktool.egg-info/top_level.txt

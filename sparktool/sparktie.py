@@ -1,9 +1,3 @@
-'''
-@Date: 2019-11-12 20:51:31
-@LastEditors  : ryan.ren
-@LastEditTime : 2020-01-09 19:49:45
-@Description: spark connection tool
-'''
 from __future__ import print_function
 import re
 import prettytable as pt
@@ -19,7 +13,7 @@ import re
 
 
 class SparkCreator(object):
-    def __init__(self, appname=None, **param):
+    def __init__(self, appname=None, pyv=None, **param):
         '''
         @description: init
         '''
@@ -33,9 +27,13 @@ class SparkCreator(object):
         self.__pyv = sys.version[0]
         self.spark = None
 
-        self.__sparkcreate(appname, param=param)
+        if pyv:
+            pac = pyv.split('/')[-1]
+            os.environ["PYSPARK_PYTHON"] = "./{0}/bin/python".format(pac)
 
-    def __sparkcreate(self, appname=None, **param):
+        self.__sparkcreate(appname, pyv, param=param)
+
+    def __sparkcreate(self, appname=None, pyv=None, **param):
         '''
         @description: create spsrksession
         @param: ex. {spark.executor.memoryOverhead:'4096'}
@@ -47,9 +45,12 @@ class SparkCreator(object):
 
         conf = SparkConf()
         conf.setAppName(appname)
-        for k, v in param.items():
-            if 'spark' in k:
-                conf.set(str(k), str(v))
+        for k in param:
+            conf.set('"{0}"'.format(str(k)), '"{0}"'.format(str(param[k])))
+
+        if pyv:
+            conf.set("spark.sql.execution.arrow.enabled", "true")
+            conf.set("spark.yarn.dist.archives", "{0}".format(pyv))
 
         self.spark = SparkSession.builder.config(conf=conf).getOrCreate()
 
@@ -71,7 +72,10 @@ class SparkCreator(object):
         hive_sql = 'describe extended {0}'.format(view)
         tt = self.spark.sql(hive_sql).where(
             col('col_name') == "View Text").select('data_type').collect()
-        return tt[0].data_type
+        viewcode = sqlparse.format(
+            tt[0].data_type, reindent=True, keyword_case='lower', identifier_case='lower', strip_comments=True)
+        
+        return viewcode
 
     def __sqlparse2table(self, query):
         '''
@@ -182,6 +186,8 @@ class SparkCreator(object):
         @description: batch excute
         @return: excutesql
         '''
+        querys = sqlparse.format(
+            sql, reindent=True, keyword_case='lower', identifier_case='lower', strip_comments=True)
         querys = list(self.__sqlparse2sqls(sql))
 
         if sqlsel:
@@ -204,9 +210,10 @@ class SparkCreator(object):
                 querys_rekudu = []
                 for query in querys:
                     for tb in tables_set:
-                        if tb in self.__customkudus:
+                        tb_lower = tb.lower()
+                        if tb_lower in self.__customkudus:
                             query = re.sub(
-                                tb, self.__customkudus[tb]['view_name'], query, flags=re.I)
+                                tb, self.__customkudus[tb_lower]['view_name'], query, flags=re.I)
                     querys_rekudu.append(query)
 
                 querys = querys_rekudu
@@ -217,7 +224,8 @@ class SparkCreator(object):
         for query in querys:
             i += 1
             if i < cnt_query:
-                print('\rExcute Progress: {0}/{1}'.format(i, cnt_query), end='')
+                print(
+                    '\rExcute Progress: {0}/{1}'.format(i, cnt_query), end='')
             else:
                 print('\rExcute Progress: {0}/{1}'.format(i, cnt_query))
             temp = self.spark.sql(query)
