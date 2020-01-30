@@ -23,9 +23,8 @@ def generate_settings():
 
             "keytab": ["admin@EXAMPLE.COM", "keytabpath"],
             "hue": {"username": "", "password": ""},
-            "hue_editor": 'http://prod-hadoop-cdh5-01.homecredit.cn:8888'
-
-            "version": '3.0.6'
+            "hue_editor": 'http://prod-hadoop-cdh5-01.homecredit.cn:8888',
+            "version": '3.0.7'
         }
     
     # generate settings file

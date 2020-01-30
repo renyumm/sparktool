@@ -1,7 +1,7 @@
 '''
 @Date: 2019-12-08 01:59:23
 @LastEditors  : ryan.ren
-@LastEditTime : 2020-01-22 19:11:52
+@LastEditTime : 2020-01-30 11:42:44
 @Description: 
 '''
 import setuptools
@@ -11,7 +11,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="sparktool",
-    version="3.0.6",
+    version="3.1.2",
     author="ryanren",
     author_email="strrenyumm@gmail.com",
     description="sparktool for hccn",

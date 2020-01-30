@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: sparktool
-Version: 3.0.6
+Version: 3.1.2
 Summary: sparktool for hccn
 Home-page: https://github.com/renyumm
 Author: ryanren
@@ -33,11 +33,11 @@ Description: sparktool
         st.switch_keytab('admin@EXAMPLE.COM', keytabpath)
         ```
         
-        switch_keytab (first run)
+        switch_huetab (first run)
         --------
         ```
         import sparktool as st
-        st.switch_huetab('admin@EXAMPLE.COM', keytabpath)
+        st.switch_huetab(username, password)
         ```
         
         SparkCreator
@@ -108,10 +108,16 @@ Description: sparktool
         [param]
         * ifprint: print sql which is beautified
         
+        [in]
+        ```python
+        aa.hue_setscript(sql, name='hcp', uuid=None)
+        ```
+        [param]
+        * uuid > name
         
         idea
         --------
-        
+        https://github.com/renyumm/sparktool/blob/master/Sparkcreator.png
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License

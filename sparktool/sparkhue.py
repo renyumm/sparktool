@@ -4,7 +4,7 @@ import os
 import sqlparse
 import prettytable as pt
 import json
-from .sparktie import SparkCreator
+from .sparkvar import savejson
 
 
 class HueCreator(object):
@@ -37,7 +37,10 @@ class HueCreator(object):
         if csr:
             self.__param['csrfmiddlewaretoken'] = csr[0]
             self.__param['next'] = '/'
-        self.__session.post(url, data=self.__param)
+        temp = self.__session.post(url, data=self.__param)
+        csr2 = re.findall(
+            r"name='csrfmiddlewaretoken' value='(.*?)'", temp.text)
+        self.__session.headers['X-CSRFToken'] = csr2[0]
 
     def __getquery(self):
         r = self.__session.get(self.__url + '/desktop/api2/doc/')
@@ -116,3 +119,52 @@ class HueCreator(object):
                 print(scr_b)
 
             return scr
+
+    def hue_setscript(self, sql, name, uuid=None, savejson=savejson):
+        name = str(name)
+        a = []
+        b = []
+        ss = sqlparse.split(sql)
+        for i in range(len(ss)):
+            if ss[i]:
+                raw = ss[i].replace('\n', '\\n')
+                a.append(raw) if i == 0 else a.append('\\n'+raw)
+                b.append('"'+raw+'"') if i == 0 else b.append('"\\n'+raw+'"')
+        sqlraw = ''.join(a)
+        sqllist = ','.join(b)
+        sqllast = a[-1]
+        savejson = savejson.replace('{name}', name)
+        savejson = savejson.replace('{sqlraw}', sqlraw)
+        savejson = savejson.replace('{sqllist}', sqllist)
+        savejson = savejson.replace('{sqllast}', sqllast)
+        if not uuid:
+            param = {
+                "type": "impala",
+                "directory_uuid": ""
+                }
+            r = self.__session.post(
+                self.__url + '/notebook/api/create_notebook', data=param).json()
+            session_uuid = r["notebook"]["uuid"]
+            savejson = savejson.replace('{id}', 'null')
+        else:
+            self.__getquery()
+            uuid = int(uuid)
+            if uuid not in self.__query:
+                print('File not be found, file list is as below')
+                self.hue_printlist(ifrefresh=False)
+            else:
+                r = self.__session.get(
+                    self.__url + '/desktop/api2/doc/?uuid={0}&data=true&dependencies=true'.format(uuid)).json()
+                session_uuid = r['document']['uuid']
+                savejson = savejson.replace('{id}', str(uuid))
+
+        savejson = savejson.replace('{uuid}', session_uuid)
+        data = {
+            'notebook': savejson,
+            'editorMode': 'true'
+            }
+        r2 = self.__session.post(self.__url + '/notebook/api/notebook/save', data=data).json()
+        try:
+            print('File has been saved as id: %s, name: %s' %(r2['id'], r2['name']))
+        except Exception:
+            print('Error: ', r2)

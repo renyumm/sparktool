@@ -25,11 +25,11 @@ import sparktool as st
 st.switch_keytab('admin@EXAMPLE.COM', keytabpath)
 ```
 
-switch_keytab (first run)
+switch_huetab (first run)
 --------
 ```
 import sparktool as st
-st.switch_huetab('admin@EXAMPLE.COM', keytabpath)
+st.switch_huetab(username, password)
 ```
 
 SparkCreator
@@ -100,6 +100,13 @@ aa.hue_getscript('hcp')
 [param]
 * ifprint: print sql which is beautified
 
+[in]
+```python
+aa.hue_setscript(sql, name='hcp', uuid=None)
+```
+[param]
+* uuid > name
 
 idea
 --------
+https://github.com/renyumm/sparktool/blob/master/Sparkcreator.png
