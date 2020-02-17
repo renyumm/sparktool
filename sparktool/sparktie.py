@@ -13,7 +13,7 @@ import re
 
 
 class SparkCreator(object):
-    def __init__(self, appname=None, pyv=None, **param):
+    def __init__(self, appname=None, pyv=None, param=None):
         '''
         @description: init
         '''
@@ -31,9 +31,9 @@ class SparkCreator(object):
             pac = pyv.split('/')[-1]
             os.environ["PYSPARK_PYTHON"] = "./{0}/bin/python".format(pac)
 
-        self.__sparkcreate(appname, pyv, param=param)
+        self.__sparkcreate(appname, pyv, param)
 
-    def __sparkcreate(self, appname=None, pyv=None, **param):
+    def __sparkcreate(self, appname=None, pyv=None, param=None):
         '''
         @description: create spsrksession
         @param: ex. {spark.executor.memoryOverhead:'4096'}
@@ -45,8 +45,9 @@ class SparkCreator(object):
 
         conf = SparkConf()
         conf.setAppName(appname)
-        for k in param:
-            conf.set('"{0}"'.format(str(k)), '"{0}"'.format(str(param[k])))
+        if param:
+            for k in param:
+                conf.set('"{0}"'.format(str(k)), '"{0}"'.format(str(param[k])))
 
         if pyv:
             conf.set("spark.sql.execution.arrow.enabled", "true")
