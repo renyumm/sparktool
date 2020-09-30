@@ -1,42 +1,46 @@
-sparktool
-========
-built to simplified the process of creating sparksession(hccn).
-* get saved query from hue
-* batch execute sqls
-* parse impala/hive view automatically
-* parse kudu table automatically
+<h1 align="center">Sparktool</h1>
 
+[TOC]
 
-install
-=======
-Python 2/3 
+<!-- <font face="Calibri"> -->
 
-* `pip install --user --upgrade sparktool`
-* `pip2 install --user --upgrade sparktool`
+### Problem
+- spark can not execute whole sql scripts one time, only execute sql one by one.
+- spark can not read kudu table directly. If a kudu table was used in a view, it will throw error.
 
+### Idea
+[hasty draft](https://github.com/renyumm/sparktool/blob/master/Sparkcreator.png)
 
-functions
-=======
+### Solution
+![solution sequence](https://github.com/renyumm/sparktool/blob/master/Solution.png)
 
-switch_keytab (first run)
---------
+### Guide
+#### Install
+```
+pip install --user --upgrade sparktool
+pip2 install --user --upgrade sparktool
+```
+
+#### Connection 
+##### Global Method
+modify /home/user/.sparktool.json
+
+##### Switch User
 ```
 import sparktool as st
 st.switch_keytab('admin@EXAMPLE.COM', keytabpath)
 ```
 
-switch_huetab (first run)
---------
+##### Connect to Hue [For HCC]
 ```
 import sparktool as st
 st.switch_huetab(username, password)
 ```
 
-SparkCreator
---------
+#### Use
+##### SparkCreator
+```
 [in]
-
-```python
 import sparktool as st
 ss = st.SparkCreator()
 sql = '''
@@ -50,13 +54,10 @@ from
      and re.code_ccase_relation = 'FIRST_POS' 
 limit 1
 ;
-'''
+
 ss.batch_excutesql(sql)
-```
 
 [out]
-
-```python
 Tranform Table:
 +--------------------------------------+--------------------------------------+--------------+
 |             Origin Table             |            Temporary View            | If Transform |
@@ -66,22 +67,20 @@ Tranform Table:
 +--------------------------------------+--------------------------------------+--------------+
 Excute Progress: 2/2
 DataFrame[skp_client: decimal(38,0)]
-```
 
 [param]
-* ifview: if view in sql, it will parse view to code
-* ifbatchre: b,c,d,e,f = ss.batch_excutesql(sql, ifview=True, ifbatchre=True)
-
-HueCreator
---------
+- ifview: whether there is a view in sql
+- ifbatchre: b,c,d,e,f = ss.batch_excutesql(sql, ifview=True, ifbatchre=True)
+```
+  
+##### HueCreator
+```
 [in]
-```python
 from sparktool import HueCreator
 aa = HueCreator()
 aa.hue_printlist()
-```
+
 [out]
-```python
 +--------+-------------------------+----------------------------+-------------------+
 |   id   |           name          |        description         |   last_modified   |
 +--------+-------------------------+----------------------------+-------------------+
@@ -89,24 +88,11 @@ aa.hue_printlist()
 | 686849 |           hcp           |                            | 2020-01-17T10:32Z |
 | 675390 |           aaaa          |                            | 2020-01-16T11:05Z |
 | 681235 |          ttttt          |                            | 2020-01-15T09:41Z |
-| 676699 |           aaaa          |                            | 2020-01-14T09:53Z | |
+| 676699 |           aaaa          |                            | 2020-01-14T09:53Z |
 +--------+-------------------------+----------------------------+-------------------+
-```
 
 [in]
-```python
 aa.hue_getscript('hcp')
-```
-[param]
-* ifprint: print sql which is beautified
-
-[in]
-```python
 aa.hue_setscript(sql, name='hcp', uuid=None)
 ```
-[param]
-* uuid > name
-
-idea
---------
-https://github.com/renyumm/sparktool/blob/master/Sparkcreator.png
+<!-- </font> -->
