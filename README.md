@@ -2,7 +2,6 @@
 
 [TOC]
 
-<font face="Calibri">
 
 ### Problem
 - spark can not execute whole sql scripts one time, only execute sql one by one.
@@ -115,4 +114,3 @@ aa.hue_printlist()
 aa.hue_getscript('hcp')
 aa.hue_setscript(sql, name='hcp', uuid=None)
 ```
-</font>
