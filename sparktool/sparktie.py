@@ -47,7 +47,7 @@ class SparkCreator(object):
         conf.setAppName(appname)
         if param:
             for k in param:
-                conf.set('"{0}"'.format(str(k)), '"{0}"'.format(str(param[k])))
+                conf.set("{0}".format(str(k)), "{0}".format(str(param[k])))
 
         if pyv:
             conf.set("spark.sql.execution.arrow.enabled", "true")
